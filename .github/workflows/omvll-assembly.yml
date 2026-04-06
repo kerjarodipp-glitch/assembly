@@ -28,18 +28,24 @@ jobs:
       # Step 4: Build O-MVLL plugin
       - name: Build O-MVLL plugin
         run: |
-          # Menavigasi ke direktori O-MVLL yang baru dikloning
+          # Masuk ke dalam folder omvll setelah clone
           cd omvll
 
-          # Membuat direktori build
+          # Membuat folder build
           mkdir build
           cd build
 
-          # Menjalankan CMake dari dalam direktori build
-          cmake ..
-          cmake --build .  # Membangun O-MVLL plugin
+          # Menjalankan cmake dari dalam direktori build
+          cmake ..  # '..' menunjuk ke direktori omvll yang berisi CMakeLists.txt
+          cmake --build .  # Membangun plugin O-MVLL
 
-      # Step 5: Compile and obfuscate assembly code
+      # Step 5: Membuat dummy file Assembly untuk tes
+      - name: Create dummy assembly file
+        run: |
+          mkdir -p src
+          echo -e ".global _start\n_start:\n    nop\n    ret" > src/main.s  # Dummy Assembly file
+
+      # Step 6: Compile and obfuscate assembly code
       - name: Compile and Obfuscate Assembly Code
         run: |
           ASM_FILE=src/main.s  # Path ke file Assembly yang ingin dienkripsi
@@ -48,7 +54,7 @@ jobs:
           # Menggunakan clang untuk mengompilasi dan mengenkripsi kode Assembly
           clang -fpass-plugin=$PLUGIN_PATH -O2 $ASM_FILE -o app-obfuscated  # Opsi -O2 untuk optimasi
 
-      # Step 6: Upload obfuscated binary (optional)
+      # Step 7: Upload obfuscated binary (optional)
       - name: Upload obfuscated binary
         uses: actions/upload-artifact@v4  # Mengunggah hasil kompilasi
         with:
