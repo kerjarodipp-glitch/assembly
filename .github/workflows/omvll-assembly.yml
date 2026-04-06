@@ -14,13 +14,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4  # Menggunakan version 4 dari checkout
 
-      # Step 2: Install dependencies including LLVM
-      - name: Install dependencies including LLVM
+      # Step 2: Install dependencies including LLVM and pybind11
+      - name: Install dependencies including LLVM and pybind11
         run: |
           sudo apt-get update
           sudo apt-get install -y cmake python3 python3-pip git build-essential ninja-build \
             libspdlog-dev python3-dev pybind11-dev clang llvm-17 llvm-17-dev llvm-17-tools \
-            libclang-17-dev  # Menginstal LLVM 17 dan clang serta dependensi lainnya
+            libclang-17-dev  # Menginstal LLVM 17, clang, dan pybind11-dev
 
       # Step 3: Clone O-MVLL repository
       - name: Clone O-MVLL repository
