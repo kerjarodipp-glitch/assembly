@@ -1,0 +1,53 @@
+name: Assembly Encryption with O-MVLL
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout code
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      # Step 2: Install dependencies
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake python3 python3-pip git build-essential ninja-build \
+            libspdlog-dev python3-dev pybind11-dev clang
+
+      # Step 3: Clone O-MVLL repository
+      - name: Clone O-MVLL repository
+        run: git clone https://github.com/open-obfuscator/o-mvll.git omvll
+
+      # Step 4: Build O-MVLL plugin
+      - name: Build O-MVLL plugin
+        run: |
+          mkdir omvll/build
+          cd omvll/build
+          cmake -G Ninja ..
+          cmake --build .
+
+      # Step 5: Compile and obfuscate assembly code
+      - name: Compile and Obfuscate Assembly Code
+        run: |
+          # File assembly yang akan dienkripsi
+          ASM_FILE=src/main.s
+
+          # Path plugin O-MVLL hasil build
+          PLUGIN_PATH=$(pwd)/omvll/build/src/libOMVLL.so
+
+          # Kompilasi dan enkripsi (obfuscate) dengan O-MVLL
+          clang -fpass-plugin=$PLUGIN_PATH -O2 $ASM_FILE -o app-obfuscated
+
+      # Step 6: Upload obfuscated binary (optional)
+      - name: Upload obfuscated binary
+        uses: actions/upload-artifact@v2
+        with:
+          name: obfuscated-assembly
+          path: app-obfuscated
