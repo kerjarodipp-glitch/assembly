@@ -25,7 +25,17 @@ jobs:
       - name: Clone O-MVLL repository
         run: git clone https://github.com/open-obfuscator/o-mvll.git omvll  # Mengambil repositori O-MVLL
 
-      # Step 4: Build O-MVLL plugin
+      # Step 4: Verifikasi apakah file CMakeLists.txt ada di dalam src
+      - name: Verify if CMakeLists.txt exists in src
+        run: |
+          if [ ! -f omvll/src/CMakeLists.txt ]; then
+            echo "CMakeLists.txt not found in src folder!"
+            exit 1
+          else
+            echo "CMakeLists.txt found in src, proceeding to build"
+          fi
+
+      # Step 5: Build O-MVLL plugin
       - name: Build O-MVLL plugin
         run: |
           # Masuk ke dalam folder omvll setelah clone
@@ -35,17 +45,17 @@ jobs:
           mkdir build
           cd build
 
-          # Menjalankan cmake dari dalam direktori build
-          cmake ..  # '..' menunjuk ke direktori omvll yang berisi CMakeLists.txt
+          # Menjalankan cmake dari dalam direktori build dengan path yang benar ke CMakeLists.txt
+          cmake ../src  # .. menunjuk ke direktori src yang berisi CMakeLists.txt
           cmake --build .  # Membangun plugin O-MVLL
 
-      # Step 5: Membuat dummy file Assembly untuk tes
+      # Step 6: Membuat dummy file Assembly untuk tes
       - name: Create dummy assembly file
         run: |
           mkdir -p src
           echo -e ".global _start\n_start:\n    nop\n    ret" > src/main.s  # Dummy Assembly file
 
-      # Step 6: Compile and obfuscate assembly code
+      # Step 7: Compile and Obfuscate Assembly Code
       - name: Compile and Obfuscate Assembly Code
         run: |
           ASM_FILE=src/main.s  # Path ke file Assembly yang ingin dienkripsi
@@ -54,7 +64,7 @@ jobs:
           # Menggunakan clang untuk mengompilasi dan mengenkripsi kode Assembly
           clang -fpass-plugin=$PLUGIN_PATH -O2 $ASM_FILE -o app-obfuscated  # Opsi -O2 untuk optimasi
 
-      # Step 7: Upload obfuscated binary (optional)
+      # Step 8: Upload obfuscated binary (optional)
       - name: Upload obfuscated binary
         uses: actions/upload-artifact@v4  # Mengunggah hasil kompilasi
         with:
