@@ -14,16 +14,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4  # Menggunakan version 4 dari checkout
 
-      # Step 2: Install dependencies including LLVM and pybind11 via pip
+      # Step 2: Install dependencies including LLVM and pybind11
       - name: Install dependencies including LLVM and pybind11
         run: |
           sudo apt-get update
           sudo apt-get install -y cmake python3 python3-pip git build-essential ninja-build \
             libspdlog-dev python3-dev clang llvm-17 llvm-17-dev llvm-17-tools \
-            libclang-17-dev  # Install LLVM, clang, and other dependencies
-
-          # Install pybind11 via pip
-          pip3 install pybind11  # Menginstal pybind11 dengan pip
+            libclang-17-dev libpybind11-dev pybind11-dev  # Install LLVM 17 and pybind11-dev
 
       # Step 3: Clone O-MVLL repository
       - name: Clone O-MVLL repository
@@ -50,7 +47,7 @@ jobs:
           cd build
 
           # Menjalankan cmake dari dalam direktori build dengan path yang benar ke CMakeLists.txt
-          cmake ../src -DLLVM_DIR=/usr/lib/llvm-17/cmake -Dpybind11_DIR=$(python3 -m pybind11 --cmakedir)  # Menentukan lokasi pybind11 melalui pip
+          cmake ../src -DLLVM_DIR=/usr/lib/llvm-17/cmake -Dpybind11_DIR=$(python3 -m pybind11 --cmakedir)  # Menambahkan path untuk pybind11
           cmake --build .  # Membangun plugin O-MVLL
 
       # Step 6: Membuat dummy file Assembly untuk tes
@@ -70,7 +67,7 @@ jobs:
 
       # Step 8: Upload obfuscated binary (optional)
       - name: Upload obfuscated binary
-        uses: actions/upload-artifact@v4  # Mengunggah hasil kompilasi
+        uses: actions/upload-artifact@v4 # Mengunggah hasil kompilasi
         with:
           name: obfuscated-assembly
           path: app-obfuscated  # Menentukan lokasi file hasil obfuscation
