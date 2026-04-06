@@ -12,7 +12,7 @@ jobs:
     steps:
       # Step 1: Checkout code
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       # Step 2: Install dependencies
       - name: Install dependencies
@@ -47,7 +47,7 @@ jobs:
 
       # Step 6: Upload obfuscated binary (optional)
       - name: Upload obfuscated binary
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: obfuscated-assembly
           path: app-obfuscated
