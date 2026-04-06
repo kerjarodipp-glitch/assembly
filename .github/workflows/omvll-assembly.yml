@@ -50,7 +50,7 @@ jobs:
 
       # Step 6: Upload obfuscated binary (optional)
       - name: Upload obfuscated binary
-        uses: actions/upload-artifact@v2  # Mengunggah hasil kompilasi
+        uses: actions/upload-artifact@v4  # Mengunggah hasil kompilasi
         with:
           name: obfuscated-assembly
           path: app-obfuscated  # Menentukan lokasi file hasil obfuscation
