@@ -14,13 +14,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4  # Menggunakan version 4 dari checkout
 
-      # Step 2: Install dependencies including LLVM and pybind11 via pip
-      - name: Install dependencies including LLVM and pybind11
+      # Step 2: Install dependencies including LLVM 17 and pybind11 via pip
+      - name: Install dependencies including LLVM 17 and pybind11
         run: |
           sudo apt-get update
           sudo apt-get install -y cmake python3 python3-pip git build-essential ninja-build \
-            libspdlog-dev python3-dev clang llvm-17 llvm-17-dev llvm-17-tools \
-            libclang-17-dev  # Install LLVM, clang, and other dependencies
+            libspdlog-dev python3-dev clang-17 llvm-17 llvm-17-dev llvm-17-tools \
+            libclang-17-dev  # Install LLVM 17, clang, and other dependencies
 
           # Install pybind11 via pip
           pip3 install pybind11  # Install pybind11 using pip
@@ -39,7 +39,7 @@ jobs:
             echo "CMakeLists.txt found in src, proceeding to build"
           fi
 
-      # Step 5: Build O-MVLL plugin
+      # Step 5: Build O-MVLL plugin with LLVM 17
       - name: Build O-MVLL plugin
         run: |
           # Masuk ke dalam folder omvll setelah clone
@@ -49,8 +49,8 @@ jobs:
           mkdir build
           cd build
 
-          # Menjalankan cmake dari dalam direktori build dengan path yang benar ke CMakeLists.txt
-          cmake ../src -DLLVM_DIR=/usr/lib/llvm-17/cmake -Dpybind11_DIR=$(python3 -m pybind11 --cmakedir)  # Menentukan path untuk pybind11
+          # Menjalankan cmake dengan path yang benar ke CMakeLists.txt dan memastikan menggunakan LLVM 17
+          cmake ../src -DLLVM_DIR=/usr/lib/llvm-17/cmake -Dpybind11_DIR=$(python3 -m pybind11 --cmakedir)  # Menentukan path untuk pybind11 dan LLVM 17
           cmake --build .  # Membangun plugin O-MVLL
 
       # Step 6: Membuat dummy file Assembly untuk tes
@@ -65,8 +65,8 @@ jobs:
           ASM_FILE=src/main.s  # Path ke file Assembly yang ingin dienkripsi
           PLUGIN_PATH=$(pwd)/omvll/build/src/libOMVLL.so  # Path ke plugin O-MVLL
 
-          # Menggunakan clang untuk mengompilasi dan mengenkripsi kode Assembly
-          clang -fpass-plugin=$PLUGIN_PATH -O2 $ASM_FILE -o app-obfuscated  # Opsi -O2 untuk optimasi
+          # Menggunakan clang-17 untuk mengompilasi dan mengenkripsi kode Assembly
+          clang-17 -fpass-plugin=$PLUGIN_PATH -O2 $ASM_FILE -o app-obfuscated  # Opsi -O2 untuk optimasi
 
       # Step 8: Upload obfuscated binary (optional)
       - name: Upload obfuscated binary
